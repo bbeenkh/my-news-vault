@@ -10,6 +10,7 @@ import { ErrorBoundary as EBoundary } from 'react-error-boundary';
 import { twMerge } from 'tailwind-merge';
 import SearchErrorIcon from '@/assets/search-error-icon.svg';
 import SearchNoneIcon from '@/assets/search-none-icon.svg';
+import { Button } from '@/components/atoms/Button';
 
 const Fallback: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -68,9 +69,22 @@ export default function ErrorBoundary({ onError, children, className }: IProps) 
             <div className={twMerge('w-full h-full flex-center', className)}>
               <div
                 role="status"
-                className="w-full h-[70dvh] flex justify-center items-center grow"
+                className="w-full h-[70dvh] flex flex-col justify-center items-center grow gap-4"
               >
                 {fallbackUI}
+                {!fallbackUI && (
+                  <>
+                    <SearchErrorIcon />
+                    <span>일시적인 문제가 발생했습니다</span>
+                  </>
+                )}
+                <Button
+                  variant="outline"
+                  onClick={props.resetErrorBoundary}
+                  className="mt-2"
+                >
+                  다시 시도
+                </Button>
               </div>
             </div>
           )}

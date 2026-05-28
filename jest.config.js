@@ -29,6 +29,9 @@ const customJestConfig = {
   testEnvironmentOptions: {
     customExportConditions: [''],
   },
+  transformIgnorePatterns: [
+    '/node_modules/(?!(lodash-es)/)',
+  ],
 };
 
 module.exports = createJestConfig(customJestConfig);

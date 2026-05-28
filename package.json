@@ -96,5 +96,6 @@
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

@@ -7,7 +7,7 @@ import NewsScrapIcon from '@/assets/news-scrap-icon.svg';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/useToast';
 import { motion } from 'motion/react';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { detailNewsAtom } from '@/components/templates/search/NewsDetailTemplate';
 
 interface IScrapButtonProps {
@@ -32,7 +32,7 @@ function SubscribeAnimation({ isScrapped, children }) {
 }
 
 export default function ScrapButton({ newsItem, isScrapped }: IScrapButtonProps) {
-  const setDetailNews = useSetAtom(detailNewsAtom);
+  const [{ selected: detailNews }, setDetailNews] = useAtom(detailNewsAtom);
   const { toast } = useToast();
   const { isLogined, authState } = useAuth();
   const { userInfo } = authState;
@@ -64,12 +64,9 @@ export default function ScrapButton({ newsItem, isScrapped }: IScrapButtonProps)
         query: newsItem.searchQuery,
         userId: userInfo!.email,
       });
-      setDetailNews({
-        selected: {
-          ...newsItem,
-          isScrapped: true,
-        },
-      });
+      if (detailNews) {
+        setDetailNews({ selected: { ...newsItem, isScrapped: true } });
+      }
       toast({
         description: '스크랩이 완료되었습니다',
       });
@@ -93,12 +90,9 @@ export default function ScrapButton({ newsItem, isScrapped }: IScrapButtonProps)
         query: newsItem.searchQuery,
         userId: userInfo!.email,
       });
-      setDetailNews({
-        selected: {
-          ...newsItem,
-          isScrapped: false,
-        },
-      });
+      if (detailNews) {
+        setDetailNews({ selected: { ...newsItem, isScrapped: false } });
+      }
       toast({
         description: '스크랩 삭제가 완료되었습니다',
       });
@@ -119,7 +113,8 @@ export default function ScrapButton({ newsItem, isScrapped }: IScrapButtonProps)
         disabled={isScrappingNews || isUnscrappingNews}
         aria-label={title}
         variant="ghost"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           if (isScrapped) {
             onClickUnscrap();
           } else {

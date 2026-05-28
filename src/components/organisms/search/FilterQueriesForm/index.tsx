@@ -8,9 +8,13 @@ import { createSearchUrlWithQueries } from '@/utils/newsItem';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import SearchIcon from '@/assets/search-ui.svg';
+import { motion } from 'framer-motion';
+
+const KOREAN_REGEX = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
 
 /**
  * 검색 입력 컴포넌트 (Input + Button)
+ * GNews는 영문 검색만 지원하므로 한글 입력 차단
  */
 export default function FilterQueriesForm() {
   const router = useRouter();
@@ -18,41 +22,55 @@ export default function FilterQueriesForm() {
   const [filterQueries, setFilterQueries] = useState<TBingNewsFilterQueries>({
     ...initializedFilterQueries,
   });
+  const [showKoreanError, setShowKoreanError] = useState(false);
 
   useEffect(() => {
     setFilterQueries({ ...initializedFilterQueries });
   }, [initializedFilterQueries]);
 
-  /**
-   * query onChange
-   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterQueries({ ...filterQueries, keyword: e.target.value });
+    const value = e.target.value;
+    const hasKorean = KOREAN_REGEX.test(value);
+    setShowKoreanError(hasKorean);
+    setFilterQueries({ ...filterQueries, keyword: value.replace(KOREAN_REGEX, '') });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
-      // make query into query string
       const url = createSearchUrlWithQueries(filterQueries);
       router.push(url);
     } catch (err) {
-      // TODO: 에러 처리
       console.error(err);
     }
   };
 
   return (
-    <form className="w-full flex gap-2" onSubmit={handleSubmit}>
-      <Input
-        className="border-mnv-gray-10"
-        onChange={handleChange}
-        value={filterQueries.keyword}
-      />
-      {/* TODO: 아이콘으로 교체 */}
-      <Button className="border-mnv-gray-10 " type="submit" variant="outline">
-        <SearchIcon />
-      </Button>
+    <form className="w-full flex flex-col gap-1" onSubmit={handleSubmit}>
+      <div className="flex gap-2">
+        <Input
+          className={`border-mnv-gray-10 focus:ring-2 focus:border-mnv-blue transition-all duration-200 ${
+            showKoreanError
+              ? 'border-red-400 focus:ring-red-300 focus:border-red-400'
+              : 'focus:ring-mnv-blue/40'
+          }`}
+          onChange={handleChange}
+          value={filterQueries.keyword}
+          placeholder="Search news in English"
+        />
+        <motion.button
+          className="border border-mnv-gray-10 rounded-md px-3 py-2 flex items-center justify-center"
+          type="submit"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        >
+          <SearchIcon />
+        </motion.button>
+      </div>
+      {showKoreanError && (
+        <p className="text-xs text-red-500 pl-1">영문으로만 검색할 수 있습니다 (한국어 추가 지원 예정)</p>
+      )}
     </form>
   );
 }

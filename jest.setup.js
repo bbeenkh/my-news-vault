@@ -10,6 +10,31 @@ global.TextDecoder = TextDecoder;
 global.TransformStream = TransformStream;
 global.BroadcastChannel = BroadcastChannel;
 
+// lodash-es mock (ESM incompatible with Jest)
+jest.mock('lodash-es', () => ({
+  flatMap: (arr, fn) => (arr || []).flatMap(fn || ((x) => x)),
+  debounce: (fn) => fn,
+  throttle: (fn) => fn,
+}));
+
+// firebase mock (ESM incompatible with Jest)
+jest.mock('firebase/app', () => ({
+  initializeApp: jest.fn(() => ({})),
+}));
+jest.mock('firebase/firestore/lite', () => ({
+  doc: jest.fn(),
+  getDocs: jest.fn(),
+  collection: jest.fn(),
+  deleteDoc: jest.fn(),
+  setDoc: jest.fn(),
+  getFirestore: jest.fn(() => ({})),
+}));
+jest.mock('firebase/auth', () => ({
+  getAuth: jest.fn(() => ({})),
+  GoogleAuthProvider: jest.fn(function () {}),
+}));
+jest.mock('@/firebase', () => ({ database: {}, auth: {}, googleProvider: {} }));
+
 // next/router mock
 jest.mock('next/router', () => ({
   useRouter: jest.fn().mockReturnValue({

@@ -1,6 +1,6 @@
 'use client';
 
-import { BING_NEWS_MAX_PAGE, defaultNewsFilterQueries } from '@/constants';
+import { NEWS_MAX_PAGE, defaultNewsFilterQueries } from '@/constants';
 import { queryClient } from '@/queries/queryClient';
 import { TBingNewsFilterQueries, TNewsItem } from '@/types';
 import {
@@ -21,7 +21,7 @@ import { queryOptionsFactory } from '@/utils/queryOptionsFactory';
  */
 export const getSearchQueryCache = (filterQueries: TBingNewsFilterQueries) => {
   const res = queryClient.getQueryData<InfiniteData<TNewsItem[]>>(
-    queryOptionsFactory.news.bing.list(filterQueries).queryKey,
+    queryOptionsFactory.news.gnews.list(filterQueries).queryKey,
   );
 
   return flatMap(res?.pages, (item) => {
@@ -41,12 +41,13 @@ function useBingNewsFetchQuery() {
   const filterQueries = useAtomValue(queryAtom);
 
   const queryStates = useInfiniteQuery({
-    ...queryOptionsFactory.news.bing.list(filterQueries),
+    ...queryOptionsFactory.news.gnews.list(filterQueries),
     getNextPageParam: (lastPage, pages) => {
-      return pages.length === BING_NEWS_MAX_PAGE ? undefined : pages.length + 1;
+      return pages.length === NEWS_MAX_PAGE ? undefined : pages.length + 1;
     },
     initialPageParam: 1,
     enabled: !!filterQueries.keyword,
+    staleTime: 1000 * 60 * 10, // 10분 — Next.js revalidate 주기와 동일
     placeholderData: {
       pages: [],
       pageParams: [1],
@@ -114,7 +115,7 @@ export function updateNewsSearchQuery(
   filterQueries: TBingNewsFilterQueries,
 ) {
   queryClient.setQueryData<InfiniteData<TNewsItem[]>>(
-    queryOptionsFactory.news.bing.list(filterQueries).queryKey,
+    queryOptionsFactory.news.gnews.list(filterQueries).queryKey,
     (oldPagesArray) => {
       if (oldPagesArray) {
         // 캐시 데이터 존재하는 경우: 캐시 업데이트
@@ -139,18 +140,6 @@ export function updateNewsSearchQuery(
   );
 }
 
-export const prefetchBingNewsQuery = async (queries: TBingNewsFilterQueries) => {
-  await queryClient.prefetchInfiniteQuery({
-    ...queryOptionsFactory.news.bing.list({
-      ...defaultNewsFilterQueries,
-      ...queries,
-    }),
-    getNextPageParam: (lastPage, pages) => {
-      return pages.length === BING_NEWS_MAX_PAGE ? undefined : pages.length + 1;
-    },
-    initialPageParam: 1,
-  });
-};
 
 const useBingNewsFetch = {
   query: useBingNewsFetchQuery,

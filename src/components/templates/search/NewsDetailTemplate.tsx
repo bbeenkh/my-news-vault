@@ -46,11 +46,13 @@ export default function NewsDetailTemplate() {
         <Card className={cn('p-0 relative border-none shadow-none')}>
           {/* thumbnail */}
           {/* FIXME: ImageView 적용, 현재 next/image가 외부이미지를 못읽어 문제발생 */}
-          <ImageView
-            src={detailNews.thumbnail}
-            alt={detailNews.title}
-            className={cn('w-full aspect-[4/3.8]')}
-          />
+          <div className="overflow-hidden rounded-t-lg">
+            <ImageView
+              src={detailNews.thumbnail}
+              alt={detailNews.title}
+              className={cn('w-full aspect-[4/3.8]')}
+            />
+          </div>
           <Card.Content className="h-auto">
             <div className="flex flex-col gap-2 mb-6">
               <Card.Title className={cn('text-md')}>{detailNews.title}</Card.Title>
@@ -58,8 +60,22 @@ export default function NewsDetailTemplate() {
                 {detailNews.description}
               </Card.Description>
             </div>
-            <div className="w-full flex justify-between items-center">
-              <span className="text-sm text-mnv-gray-40">{detailNews.datePublished}</span>
+            <div className="w-full flex justify-between items-center border-t border-mnv-gray-10 pt-3 mt-3">
+              <span className="text-sm text-mnv-gray-40">
+                {(() => {
+                  try {
+                    const d = new Date(detailNews.datePublished);
+                    if (isNaN(d.getTime())) return detailNews.datePublished;
+                    return d.toLocaleDateString('ko-KR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    });
+                  } catch {
+                    return detailNews.datePublished;
+                  }
+                })()}
+              </span>
               <ScrapButton newsItem={detailNews} isScrapped={detailNews.isScrapped} />
             </div>
           </Card.Content>
