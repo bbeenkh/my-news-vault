@@ -18,7 +18,7 @@ interface IProps {
  */
 function NewsCard({ newsItem }: IProps) {
   const [_, setDetailNews] = useAtom(detailNewsAtom);
-  const { title, description, providerIcon, thumbnail, datePublished } = newsItem;
+  const { title, providerIcon, thumbnail, datePublished } = newsItem;
   return (
     <Card
       className={cn(
@@ -49,16 +49,6 @@ function NewsCard({ newsItem }: IProps) {
           <Card.Title className={cn('text-md', styles['card-title-ellipsis'])}>
             {title}
           </Card.Title>
-          <Card.Description
-            className={cn('text-sm overflow-hidden max-h-[5em]', styles['card-desc-ellipsis'])}
-          >
-            {description}
-          </Card.Description>
-          {datePublished && (
-            <span className="text-xs text-mnv-gray-40 mt-auto">
-              {new Date(datePublished).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}
-            </span>
-          )}
         </div>
       </Card.Content>
       <Card.Footer

@@ -119,7 +119,8 @@ export default function ScrapButton({ newsItem, isScrapped }: IScrapButtonProps)
         disabled={isScrappingNews || isUnscrappingNews}
         aria-label={title}
         variant="ghost"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           if (isScrapped) {
             onClickUnscrap();
           } else {
