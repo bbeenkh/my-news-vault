@@ -1,7 +1,6 @@
 import { TBingNewsFilterQueries, TGNewsAPIRes, TNewsItem, TUserInfo } from '@/types';
 import { doc, getDocs, collection, deleteDoc, setDoc } from 'firebase/firestore/lite';
 import { database } from '@/firebase';
-import GNewsAPI from '@/api/GNewsAPI';
 import APIError from '@/utils/APIError';
 import ERRCODE from '@/constants/errCode';
 
@@ -18,17 +17,22 @@ export const fetchGNews = async (
   pageNum: number,
 ) => {
   try {
-    const res = await GNewsAPI.get<TGNewsAPIRes>('search', {
-      params: { q: query, max: GNEWS_COUNT_PER_PAGE, page: pageNum },
-      adapter: 'fetch',
-      fetchOptions: {
-        next: {
-          tags: [`gnews-${query}-${pageNum}`],
-          revalidate: REVALIDATE_DURATION_SEC,
-        },
+    const searchParams = new URLSearchParams({
+      q: query,
+      max: String(GNEWS_COUNT_PER_PAGE),
+      page: String(pageNum),
+    });
+    const res = await fetch(`/api/news?${searchParams.toString()}`, {
+      next: {
+        tags: [`gnews-${query}-${pageNum}`],
+        revalidate: REVALIDATE_DURATION_SEC,
       },
     });
-    return res.data;
+    if (!res.ok) {
+      throw new Error('news fetch failed');
+    }
+    const data = (await res.json()) as TGNewsAPIRes;
+    return data;
   } catch (e) {
     throw new APIError(ERRCODE.NEWS_FETCH_FAILED);
   }
