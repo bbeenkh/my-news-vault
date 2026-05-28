@@ -17,7 +17,7 @@ export default function LandingPageTemplate() {
               <FadeInAnimContainer type="left-right">
                 <div className="flex flex-col gap-4">
                   <h1 className="mobile:text-2xl text-4xl sm:text-6xl lg:text-7xl font-bold text-black">
-                    <span className="text-primary font-bold">My News Vault</span>
+                    <span className="text-black font-bold">My News Vault</span>
                   </h1>
                   <div className="relative inline-flex">
                     <span className="absolute inset-x-0 bottom-0 border-b-[30px]"></span>
@@ -97,7 +97,7 @@ export default function LandingPageTemplate() {
               <FadeInAnimContainer type="right-left">
                 <div className="w-full">
                   <img
-                    src="/images/search-demo.png"
+                    src="/img/landing-img1.png"
                     alt="뉴스 검색 데모 이미지"
                     className="w-full rounded-xl shadow-md"
                   />
@@ -120,7 +120,7 @@ export default function LandingPageTemplate() {
               <FadeInAnimContainer type="left-right">
                 <div className="w-full">
                   <img
-                    src="/images/scrap-demo.png"
+                    src="/img/landing-img2.png"
                     alt="스크랩 기능 데모 이미지"
                     className="w-full rounded-xl shadow-md"
                   />
