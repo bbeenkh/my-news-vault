@@ -1,7 +1,7 @@
 import { TBingNewsFilterQueries, TNewsItem, TPageProps } from '@/types';
 
 /** 한번에 몇개씩 호출할지 결정 */
-export const FETCH_NEWS_COUNT_PER_PAGE = 20;
+export const FETCH_NEWS_COUNT_PER_PAGE = 10;
 
 /** Toast ui duration */
 export const TOAST_DURATION = 3000;
@@ -47,4 +47,4 @@ export const defaultNewsFilterQueries: TBingNewsFilterQueries = {
 export const DEFAULT_API_TIMEOUT = 1000 * 10;
 
 /** 최대 뉴스 추가 로드 수: 3개 */
-export const BING_NEWS_MAX_PAGE = 3;
+export const NEWS_MAX_PAGE = 3;
