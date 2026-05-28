@@ -69,7 +69,7 @@ export default function FilterQueriesForm() {
         </motion.button>
       </div>
       {showKoreanError && (
-        <p className="text-xs text-red-500 pl-1">영문으로만 검색할 수 있습니다</p>
+        <p className="text-xs text-red-500 pl-1">영문으로만 검색할 수 있습니다 (한국어 추가 지원 예정)</p>
       )}
     </form>
   );
