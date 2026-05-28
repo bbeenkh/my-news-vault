@@ -18,15 +18,15 @@ interface IProps {
  */
 function NewsCard({ newsItem }: IProps) {
   const [_, setDetailNews] = useAtom(detailNewsAtom);
-  const { title, description, providerIcon, thumbnail, isScrapped } = newsItem;
+  const { title, description, providerIcon, thumbnail, isScrapped, datePublished } = newsItem;
   return (
     <Card
       className={cn(
-        'p-0 relative',
+        'p-0 relative group cursor-pointer',
         'desktop:w-[14.44rem] desktop:h-[23.38rem]',
-        'tablet:w-[14.44rem] abtlet:h-[23.38rem]',
+        'tablet:w-[14.44rem] tablet:h-[23.38rem]',
         'mobile:w-full mobile:h-auto',
-        'hover:shadow-lg transition-all duration-300',
+        'hover:-translate-y-1 hover:shadow-xl hover:border-mnv-blue/30 transition-all duration-200 ease-out',
       )}
       onClick={() => {
         setDetailNews({
@@ -44,7 +44,9 @@ function NewsCard({ newsItem }: IProps) {
       )}
       {/* thumbnail */}
       {/* FIXME: ImageView 적용, 현재 next/image가 외부이미지를 못읽어 문제발생 */}
-      <ImageView src={thumbnail} alt={title} className={cn('w-full aspect-[4/3.8]')} />
+      <div className="overflow-hidden rounded-t-lg">
+        <ImageView src={thumbnail} alt={title} className={cn('w-full aspect-[4/3.8] transition-transform duration-300 group-hover:scale-105')} />
+      </div>
       <Card.Content className="p-4 !text-card-foreground">
         <div className="flex flex-col gap-2 mb-6">
           <Card.Title className={cn('text-md', styles['card-title-ellipsis'])}>
@@ -55,6 +57,11 @@ function NewsCard({ newsItem }: IProps) {
           >
             {description}
           </Card.Description>
+          {datePublished && (
+            <span className="text-xs text-mnv-gray-40 mt-auto">
+              {new Date(datePublished).toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric' })}
+            </span>
+          )}
         </div>
       </Card.Content>
     </Card>

@@ -49,9 +49,9 @@ const fetchCacheTestAxios = async (type: 'a' | 'b' | 'c') => {
  */
 export default async function SearchPageView() {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-start gap-8 bg-background">
+    <div className="w-full h-full flex flex-col items-center justify-start mobile:gap-4 tablet:gap-6 desktop:gap-8 bg-background">
       <NewsDetailTemplate />
-      <div className="desktop:w-[30.13rem] tablet:w-[30.13rem] mobile:w-full">
+      <div className="desktop:w-[42rem] tablet:w-full mobile:w-full mobile:px-3 tablet:px-4">
         <FilterQueriesForm />
       </div>
       <Suspense fallback={<SearchPageFallback />}>

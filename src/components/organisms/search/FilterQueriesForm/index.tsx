@@ -8,6 +8,7 @@ import { createSearchUrlWithQueries } from '@/utils/newsItem';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import SearchIcon from '@/assets/search-ui.svg';
+import { motion } from 'framer-motion';
 
 /**
  * 검색 입력 컴포넌트 (Input + Button)
@@ -45,14 +46,20 @@ export default function FilterQueriesForm() {
   return (
     <form className="w-full flex gap-2" onSubmit={handleSubmit}>
       <Input
-        className="border-mnv-gray-10"
+        className="border-mnv-gray-10 focus:ring-2 focus:ring-mnv-blue/40 focus:border-mnv-blue transition-all duration-200"
         onChange={handleChange}
         value={filterQueries.keyword}
+        placeholder="뉴스 키워드를 입력하세요"
       />
-      {/* TODO: 아이콘으로 교체 */}
-      <Button className="border-mnv-gray-10 " type="submit" variant="outline">
+      <motion.button
+        className="border border-mnv-gray-10 rounded-md px-3 py-2 flex items-center justify-center"
+        type="submit"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+      >
         <SearchIcon />
-      </Button>
+      </motion.button>
     </form>
   );
 }

@@ -9,13 +9,13 @@ import ScrapPageFallback from './ScrapPageFallback';
  */
 export default async function ScrapPageView() {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-start gap-8">
+    <div className="w-full h-full flex flex-col items-center justify-start mobile:gap-4 tablet:gap-6 desktop:gap-8 mobile:pt-4 tablet:pt-8">
       <Suspense fallback={<ScrapPageFallback />}>
         <ErrorBoundary>
-          <div className="w-full px-10">
+          <div className="w-full mobile:px-3 tablet:px-6 desktop:px-10">
             <TotalScrapCount />
           </div>
-          <ScrapPageFallback />
+          <ScrapGridList />
         </ErrorBoundary>
       </Suspense>
     </div>
