@@ -58,8 +58,11 @@ export const fetchScrappedList = async (userId: TUserInfo['email']) => {
  */
 export const scrapNews = async (userId: TUserInfo['email'], newsItem: TNewsItem) => {
   try {
-    await setDoc(doc(database, `scrap/${userId}/scrap`, newsItem.newsId), newsItem);
+    // newsId가 URL이므로 '/'를 포함 → Firestore document ID로 사용 불가 → encodeURIComponent로 인코딩
+    const docId = encodeURIComponent(newsItem.newsId);
+    await setDoc(doc(database, `scrap/${userId}/scrap`, docId), newsItem);
   } catch (e) {
+    console.error(e);
     throw new APIError(ERRCODE.SCRAP_ADD_FAILED);
   }
 };
@@ -69,7 +72,8 @@ export const scrapNews = async (userId: TUserInfo['email'], newsItem: TNewsItem)
  */
 export const unscrapNews = async (userId: TUserInfo['email'], newsId: string) => {
   try {
-    const target = doc(database, `scrap/${userId}/scrap`, newsId);
+    const docId = encodeURIComponent(newsId);
+    const target = doc(database, `scrap/${userId}/scrap`, docId);
     await deleteDoc(target);
   } catch (e) {
     throw new APIError(ERRCODE.SCRAP_DELETE_FAILED);

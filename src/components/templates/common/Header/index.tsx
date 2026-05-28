@@ -20,15 +20,17 @@ const Header = () => {
         <AppLogo />
       </div>
       <div className="flex justify-end items-center">
-        <div
-          className={`scrap-link flex justify-end items-center ${
-            isScrapActive
-              ? 'border-b-2 border-mnv-blue pb-0.5'
-              : 'hover:text-mnv-blue transition-colors duration-200'
-          }`}
-        >
-          <ToScrapPageButton />
-        </div>
+        {isLogined && (
+          <div
+            className={`scrap-link flex justify-end items-center ${
+              isScrapActive
+                ? 'border-b-2 border-mnv-blue pb-0.5'
+                : 'hover:text-mnv-blue transition-colors duration-200'
+            }`}
+          >
+            <ToScrapPageButton />
+          </div>
+        )}
         <div className="login-logout mobile:ml-2 tablet:ml-5 desktop:ml-10 flex items-center">
           {isLogined && user?.photoURL && (
             <ProfileImage

@@ -8,7 +8,7 @@ import Header from '@/components/templates/common/Header';
 export default function AfterLoginLayout({ children }) {
   return (
     <Layout className="w-full bg-background">
-      <Layout.Header className="shadow-none fixed">
+      <Layout.Header className="shadow-none fixed top-0">
         <Header />
       </Layout.Header>
       <Layout.Body>{children}</Layout.Body>
