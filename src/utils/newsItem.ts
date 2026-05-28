@@ -131,7 +131,7 @@ export async function fetchNewsListAndConvert(
 
   const convertedNewsList = fetchResult.articles
     .map((article) => {
-      const isScrapped = setIsScrapped(article.url, scrappedNewsList);
+      const isScrapped = setIsScrapped(article.url, scrappedNewsList ?? []);
       const isDuplicated = isDuplicatedNews(article.url, curNewsItems);
       if (!isDuplicated) {
         return convertToNewsItem(article, keyword, isScrapped);
