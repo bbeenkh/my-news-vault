@@ -23,7 +23,7 @@ export const fetchGNews = async (
       adapter: 'fetch',
       fetchOptions: {
         next: {
-          tags: [query, GNEWS_COUNT_PER_PAGE, pageNum],
+          tags: [`gnews-${query}-${pageNum}`],
           revalidate: REVALIDATE_DURATION_SEC,
         },
       },

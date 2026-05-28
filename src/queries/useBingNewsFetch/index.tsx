@@ -47,6 +47,7 @@ function useBingNewsFetchQuery() {
     },
     initialPageParam: 1,
     enabled: !!filterQueries.keyword,
+    staleTime: 1000 * 60 * 10, // 10분 — Next.js revalidate 주기와 동일
     placeholderData: {
       pages: [],
       pageParams: [1],
