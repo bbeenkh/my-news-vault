@@ -3,11 +3,11 @@ import ProfileImage from '@/components/atoms/ProfileImage';
 import { cn } from '@/lib/utils';
 import { TNewsItem } from '@/types';
 import React, { memo } from 'react';
-import NewsScrapIcon from '@/assets/news-scrap-icon.svg';
 import ImageView from '@/components/atoms/ImageView';
 import { useAtom } from 'jotai';
 import { detailNewsAtom } from '@/components/templates/search/NewsDetailTemplate';
 import styles from './NewsCard.module.css';
+import ScrapButton from '@/components/organisms/search/ScrapButton';
 
 interface IProps {
   newsItem: TNewsItem;
@@ -18,7 +18,7 @@ interface IProps {
  */
 function NewsCard({ newsItem }: IProps) {
   const [_, setDetailNews] = useAtom(detailNewsAtom);
-  const { title, description, providerIcon, thumbnail, isScrapped, datePublished } = newsItem;
+  const { title, description, providerIcon, thumbnail, datePublished } = newsItem;
   return (
     <Card
       className={cn(
@@ -39,9 +39,6 @@ function NewsCard({ newsItem }: IProps) {
         alt={title}
         className={cn('absolute top-[0.6rem] left-[0.6rem] w-[2rem] h-[2rem] z-30')}
       />
-      {isScrapped && (
-        <NewsScrapIcon className="absolute top-[0.6rem] right-[0.6rem] w-[2rem] h-[2rem] z-30 fill-pink-500" />
-      )}
       {/* thumbnail */}
       {/* FIXME: ImageView 적용, 현재 next/image가 외부이미지를 못읽어 문제발생 */}
       <div className="overflow-hidden rounded-t-lg">
@@ -64,13 +61,15 @@ function NewsCard({ newsItem }: IProps) {
           )}
         </div>
       </Card.Content>
+      <Card.Footer
+        className="absolute bottom-0 left-0 w-full h-auto flex justify-between p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <span className="text-sm text-mnv-gray-40">{datePublished}</span>
+        <ScrapButton newsItem={newsItem} isScrapped={newsItem.isScrapped} />
+      </Card.Footer>
     </Card>
   );
 }
 
 export default memo(NewsCard);
-
-// <Card.Footer className="absolute bottom-0 left-0 w-full h-auto flex justify-between p-4">
-//   <span className="text-sm text-mnv-gray-40">{datePublished}</span>
-//   <ScrapButton newsItem={newsItem} isScrapped={newsItem.isScrapped} />
-// </Card.Footer>;
