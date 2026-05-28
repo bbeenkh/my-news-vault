@@ -1,6 +1,6 @@
 import { defaultNewsItem } from '@/constants';
-import { TBingNewsFilterQueries, TNewsItem, TRawNewsItem } from '@/types';
-import { fetchBingNews } from '@/api/client';
+import { TBingNewsFilterQueries, TGNewsArticle, TNewsItem } from '@/types';
+import { fetchGNews } from '@/api/client';
 import APIError from '@/utils/APIError';
 import ERRCODE from '@/constants/errCode';
 // eslint-disable-next-line import/no-cycle
@@ -9,7 +9,7 @@ import { queryClient } from '@/queries/queryClient';
 import { getSearchQueryCache } from '@/queries/useBingNewsFetch';
 
 /**
- * YYYY-MM-DD hh:mm 형식으로 날짜 변환
+ * YYYY-MM-DD 형식으로 날짜 변환 (변경 없음)
  */
 export const parseDateToFormat = (date: string) => {
   if (!date) return '등록된 날짜 없음';
@@ -18,95 +18,76 @@ export const parseDateToFormat = (date: string) => {
   const month = d.getMonth() + 1 < 10 ? `0${d.getMonth() + 1}` : d.getMonth() + 1;
   const day = d.getDate() < 10 ? `0${d.getDate()}` : d.getDate();
 
-  // 날짜 형식 잘못된 경우
   if (!year || !month || !day) return '등록된 날짜 없음';
 
   return `${year}-${month}-${day}`;
 };
 
 /**
- * provider 데이터에서 providerIcon 추출
- * @param provider: provider 데이터
- * @returns providerIcon, 없으면 null
+ * GNews source에서 favicon URL 생성
  */
-export const getProviderIcon = (provider: TRawNewsItem['provider']) => {
-  if (!provider) return null;
-  const providerIcon = provider[0].image?.thumbnail?.contentUrl;
-  return providerIcon || null;
+export const getProviderIcon = (source: TGNewsArticle['source']) => {
+  if (!source?.url) return null;
+  return `https://www.google.com/s2/favicons?domain=${source.url}&sz=64`;
 };
 
 /**
- * provider 데이터에서 providerName 추출
- * @param provider: provider 데이터
- * @returns providerName, 없으면 null
+ * GNews source에서 providerName 추출
  */
-export const getProviderName = (provider: TRawNewsItem['provider']) => {
-  if (!provider) return null;
-  const providerName = provider[0].name;
-  return providerName || null;
+export const getProviderName = (source: TGNewsArticle['source']) => {
+  if (!source?.name) return null;
+  return source.name;
 };
 
 /**
- * Bing News API 응답데이터를 클라이언트에서 사용할 형식으로 변환
- * @param raw: Bing News API 원본 데이터
- * @param searchQuery: 검색어
- * @param isScrapped: 스크랩 여부
- * @returns TNewsItem
+ * GNews article을 TNewsItem 형식으로 변환
+ * newsId: url을 고유 식별자로 사용
  */
 export const convertToNewsItem = (
-  raw: TRawNewsItem,
-  datePublished: string,
+  article: TGNewsArticle,
   searchQuery: TBingNewsFilterQueries['keyword'],
   isScrapped: boolean,
-) => {
+): TNewsItem => {
   return {
-    newsId: raw?.name || defaultNewsItem.newsId,
-    datePublished: parseDateToFormat(datePublished) || defaultNewsItem.datePublished,
-    description: raw?.description || defaultNewsItem.description,
-    providerIcon: getProviderIcon(raw?.provider) || defaultNewsItem.providerIcon,
-    providerName: getProviderName(raw?.provider) || defaultNewsItem.providerName,
-    thumbnail: raw?.image ? raw?.image?.thumbnail.contentUrl : defaultNewsItem.thumbnail,
-    title: raw?.name || defaultNewsItem.title,
+    newsId: article?.url || defaultNewsItem.newsId,
+    datePublished: parseDateToFormat(article?.publishedAt) || defaultNewsItem.datePublished,
+    description: article?.description || defaultNewsItem.description,
+    providerIcon: getProviderIcon(article?.source) || defaultNewsItem.providerIcon,
+    providerName: getProviderName(article?.source) || defaultNewsItem.providerName,
+    thumbnail: article?.image || defaultNewsItem.thumbnail,
+    title: article?.title || defaultNewsItem.title,
     isScrapped,
     searchQuery,
-    url: raw?.url || defaultNewsItem.url,
+    url: article?.url || defaultNewsItem.url,
   };
 };
 
 /**
- * 스크랩 여부 플래그 획득
- * @param targetNewsId: 스크랩 여부 초기화할 뉴스 아이디
- * @param scrappedNewsList: 스크랩 리스트
+ * 스크랩 여부 플래그 획득 (변경 없음)
  */
 export const setIsScrapped = (
   targetNewsId: TNewsItem['newsId'],
   scrappedNewsList: TNewsItem[],
 ) => {
   if (!scrappedNewsList) return false;
-
   const hasSame = scrappedNewsList.find((item) => item.newsId === targetNewsId);
   return Boolean(hasSame);
 };
 
 /**
- * 중복된 기사인지 판별
- * @param targetNewsId: 중복 체크 대상 뉴스 아이디
- * @param scrappedNewsList: 스크랩 리스트
+ * 중복된 기사인지 판별 (변경 없음)
  */
 export const isDuplicatedNews = (
   targetNewsId: TNewsItem['newsId'],
   curNewsItems: TNewsItem[],
 ) => {
   if (!curNewsItems) return false;
-
   const isDuplicated = curNewsItems.find((item) => item.newsId === targetNewsId);
   return isDuplicated !== undefined;
 };
 
 /**
- * 특수문자 포함되었는지 확인
- * @param str : test할 문자열
- * @returns 결과값
+ * 특수문자 포함되었는지 확인 (변경 없음)
  */
 export const hasSpecialCharacters = (str: string) => {
   const regExp = /[~!@#$%^&*()_+|<>?:{}]/;
@@ -114,62 +95,51 @@ export const hasSpecialCharacters = (str: string) => {
 };
 
 /**
- * 검색 쿼리 문자열 생성
- * @param filterQueries: 검색 필터링 쿼리 객체
- * @returns 검색 쿼리 url 문자열
+ * 검색 쿼리 문자열 생성 (변경 없음)
  */
 export const createSearchUrlWithQueries = (filterQueries: Record<string, string | number>) => {
   const url = new URLSearchParams();
   const keys = Object.keys(filterQueries);
-
   keys.forEach((key) => {
-    if (filterQueries[key]) {
+    if (filterQueries[key] !== null && filterQueries[key] !== undefined && filterQueries[key] !== '') {
       url.append(key, filterQueries[key].toString());
     }
   });
-
   return `?${url.toString()}`;
 };
 
 /**
- * Bing News API에서 가져온 데이터를 TNewsItem 형식으로 변환
+ * GNews API에서 가져온 데이터를 TNewsItem 형식으로 변환
  * - 중복 뉴스 제거
  * - 스크랩 데이터 사용하여 isScrapped 초기화
- * @param filterQueries: 검색 필터링 쿼리 객체
- * @param pageParam: 페이지 번호
- * @returns
  */
 export async function fetchNewsListAndConvert(
   filterQueries: TBingNewsFilterQueries,
   pageParam: number,
 ) {
   const { keyword } = filterQueries;
-  // api 호출
-  const fetchResult = await fetchBingNews(keyword, pageParam);
+  const fetchResult = await fetchGNews(keyword, pageParam);
 
-  // 검색결과 없으면 not found 에러
-  if (fetchResult.value.length === 0) {
+  if (fetchResult.articles.length === 0) {
     throw new APIError(ERRCODE.NEWS_FETCH_NOT_FOUND);
   }
-  // 스크랩 목록
+
   const scrappedNewsList = queryClient.getQueryData<TNewsItem[]>(
     queryOptionsFactory.scrap.list('dd').queryKey,
   );
-  // 현재 뉴스데이터
   const curNewsItems = getSearchQueryCache(filterQueries);
-  // newsItem형식으로 변환
-  const convertedNewsList = fetchResult.value
-    .map((item) => {
-      const isScrapped = setIsScrapped(item.name, scrappedNewsList);
-      const datePublished = parseDateToFormat(item.datePublished);
-      // 중복된 뉴스는 제거(중복된 뉴스 들어오는 경우 있음)
-      const isDuplicated = isDuplicatedNews(item.name, curNewsItems);
+
+  const convertedNewsList = fetchResult.articles
+    .map((article) => {
+      const isScrapped = setIsScrapped(article.url, scrappedNewsList);
+      const isDuplicated = isDuplicatedNews(article.url, curNewsItems);
       if (!isDuplicated) {
-        return convertToNewsItem(item, datePublished, keyword, isScrapped);
+        return convertToNewsItem(article, keyword, isScrapped);
       } else {
         return undefined;
       }
     })
     .filter(Boolean);
+
   return convertedNewsList;
 }
