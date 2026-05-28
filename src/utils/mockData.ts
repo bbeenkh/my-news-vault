@@ -1,46 +1,33 @@
-import { TNewsItem, TRawNewsItem } from '@/types';
+import { TGNewsArticle, TNewsItem } from '@/types';
 
-export const mockRawNewsItem: TRawNewsItem = {
-  datePublished: '2021-08-01T00:00:00.0000000Z',
+export const mockGNewsArticle: TGNewsArticle = {
+  title: 'scrapped-newsId',
   description: 'test',
-  headline: true,
-  name: 'scrapped-newsId',
-  provider: [
-    {
-      image: {
-        thumbnail: {
-          contentUrl: 'test',
-        },
-      },
-      name: 'test',
-    },
-  ],
-  image: {
-    thumbnail: {
-      contentUrl: 'test–',
-      height: 100,
-      width: 100,
-    },
+  content: 'test content',
+  url: 'https://example.com/news/scrapped-newsId',
+  image: 'https://img.example.com/test.jpg',
+  publishedAt: '2021-08-01T00:00:00Z',
+  source: {
     name: 'test',
+    url: 'https://example.com',
   },
-  url: 'test',
 };
 
 export const mockNewsItem: TNewsItem[] = [
   {
-    newsId: 'scrapped-newsId',
+    newsId: 'https://example.com/news/scrapped-newsId',
     datePublished: '2021-08-01',
     description: 'test',
-    providerIcon: 'test',
+    providerIcon: 'https://www.google.com/s2/favicons?domain=https://example.com&sz=64',
     providerName: 'test',
-    thumbnail: 'test',
+    thumbnail: 'https://img.example.com/test.jpg',
     title: 'scrapped-newsId',
     isScrapped: false,
-    url: 'test',
+    url: 'https://example.com/news/scrapped-newsId',
     searchQuery: 'test-query',
   },
   {
-    newsId: 'not-scrapped-newsId',
+    newsId: 'https://example.com/news/not-scrapped-newsId',
     datePublished: '2021-08-01',
     description: 'test',
     providerIcon: 'test',
@@ -48,26 +35,26 @@ export const mockNewsItem: TNewsItem[] = [
     thumbnail: 'test',
     title: 'not-scrapped-newsId',
     isScrapped: false,
-    url: 'test',
+    url: 'https://example.com/news/not-scrapped-newsId',
     searchQuery: 'test-query',
   },
 ];
 
 export const mockScrappedNewsItem: TNewsItem[] = [
   {
-    newsId: 'scrapped-newsId',
+    newsId: 'https://example.com/news/scrapped-newsId',
     datePublished: '2021-08-01',
     description: 'test',
-    providerIcon: 'test',
+    providerIcon: 'https://www.google.com/s2/favicons?domain=https://example.com&sz=64',
     providerName: 'test',
-    thumbnail: 'test',
+    thumbnail: 'https://img.example.com/test.jpg',
     title: 'scrapped-newsId',
     isScrapped: true,
-    url: 'test',
+    url: 'https://example.com/news/scrapped-newsId',
     searchQuery: 'test-query',
   },
   {
-    newsId: 'not-scrapped-newsId2',
+    newsId: 'https://example.com/news/not-scrapped-newsId2',
     datePublished: '2021-08-01',
     description: 'test',
     providerIcon: 'test',
@@ -75,7 +62,7 @@ export const mockScrappedNewsItem: TNewsItem[] = [
     thumbnail: 'test',
     title: 'not-scrapped-newsId2',
     isScrapped: true,
-    url: 'test',
+    url: 'https://example.com/news/not-scrapped-newsId2',
     searchQuery: 'test-query',
   },
 ];

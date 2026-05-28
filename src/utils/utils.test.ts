@@ -1,5 +1,5 @@
 import { defaultNewsItem } from '@/constants';
-import { mockNewsItem, mockRawNewsItem, mockScrappedNewsItem } from './mockData';
+import { mockGNewsArticle, mockNewsItem, mockScrappedNewsItem } from './mockData';
 import {
   isDuplicatedNews,
   hasSpecialCharacters,
@@ -12,40 +12,43 @@ import {
 } from './newsItem';
 
 describe('getProviderIcon', () => {
-  it('providerIcon 리턴', () => {
-    const providerIcon = getProviderIcon(mockRawNewsItem.provider);
-    expect(providerIcon).toBe(mockRawNewsItem.provider[0].image.thumbnail.contentUrl);
+  it('source.url로 favicon URL 리턴', () => {
+    const icon = getProviderIcon(mockGNewsArticle.source);
+    expect(icon).toBe(
+      `https://www.google.com/s2/favicons?domain=${mockGNewsArticle.source.url}&sz=64`,
+    );
   });
-  it('providerIcon 없을 경우 null 리턴', () => {
-    const providerIcon = getProviderIcon(undefined);
-    expect(providerIcon).toBe(null);
+  it('source 없을 경우 null 리턴', () => {
+    const icon = getProviderIcon(undefined);
+    expect(icon).toBe(null);
   });
 });
 
 describe('getProviderName', () => {
-  it('providerName 리턴', () => {
-    const providerName = getProviderName(mockRawNewsItem.provider);
-    expect(providerName).toBe(mockRawNewsItem.provider[0].name);
+  it('source.name 리턴', () => {
+    const name = getProviderName(mockGNewsArticle.source);
+    expect(name).toBe(mockGNewsArticle.source.name);
   });
-  it('providerName 없을 경우 null 리턴', () => {
-    const providerName = getProviderName(undefined);
-    expect(providerName).toBe(null);
+  it('source 없을 경우 null 리턴', () => {
+    const name = getProviderName(undefined);
+    expect(name).toBe(null);
   });
 });
 
-describe('parseToNewsItem', () => {
+describe('convertToNewsItem', () => {
   it('초기화 값 제대로 들어가는지 확인', () => {
-    const newsItem = convertToNewsItem(mockRawNewsItem, '2023-01-01', 'test-query', false);
-    expect(newsItem.datePublished).toBe('2023-01-01');
+    const newsItem = convertToNewsItem(mockGNewsArticle, 'test-query', false);
+    expect(newsItem.newsId).toBe(mockGNewsArticle.url);
+    expect(newsItem.datePublished).toBe('2021-08-01');
     expect(newsItem.searchQuery).toBe('test-query');
     expect(newsItem.isScrapped).toBe(false);
+    expect(newsItem.title).toBe(mockGNewsArticle.title);
+    expect(newsItem.thumbnail).toBe(mockGNewsArticle.image);
   });
 
-  it('원본 데이터 누락시', () => {
-    const newsItem = convertToNewsItem(undefined, '2023-01-01', 'test-query', false);
-
+  it('원본 데이터 누락시 defaultNewsItem 값 사용', () => {
+    const newsItem = convertToNewsItem(undefined, 'test-query', false);
     expect(newsItem.newsId).toBe(defaultNewsItem.newsId);
-    expect(newsItem.datePublished).toBe('2023-01-01');
     expect(newsItem.description).toBe(defaultNewsItem.description);
     expect(newsItem.providerName).toBe(defaultNewsItem.providerName);
     expect(newsItem.providerIcon).toBe(defaultNewsItem.providerIcon);
@@ -78,14 +81,13 @@ describe('isDuplicatedNews', () => {
     const result = isDuplicatedNews(mockNewsItem[0].newsId, [
       {
         ...mockNewsItem[0],
-        newsId: 'different-news-id',
+        newsId: 'https://example.com/news/different-id',
       },
     ]);
     expect(result).toEqual(false);
   });
 });
 
-// TODO: 다른곳으로 이동
 describe('hasSpecialCharacters', () => {
   it('특수문자 포함되지 않은 경우', () => {
     const result = hasSpecialCharacters('test가나다123TEST');
@@ -116,11 +118,7 @@ describe('parseDateToFormat', () => {
 
 describe('createSearchUrlWithQueries', () => {
   it('주어진 객체 사용하여 query string url 생성', () => {
-    const testQueries = {
-      name: 'jack',
-      age: 10,
-    };
-    const result = createSearchUrlWithQueries(testQueries);
+    const result = createSearchUrlWithQueries({ name: 'jack', age: 10 });
     expect(result).toBe('?name=jack&age=10');
   });
   it('null, undefined 빈 문자열 값은 제외하고 생성', () => {
