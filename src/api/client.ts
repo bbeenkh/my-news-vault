@@ -1,42 +1,34 @@
-import { TBingNewsAPIRes, TBingNewsFilterQueries, TNewsItem, TUserInfo } from '@/types';
+import { TBingNewsFilterQueries, TGNewsAPIRes, TNewsItem, TUserInfo } from '@/types';
 import { doc, getDocs, collection, deleteDoc, setDoc } from 'firebase/firestore/lite';
 import { database } from '@/firebase';
-import BingAPI from '@/api/BingAPI';
+import GNewsAPI from '@/api/GNewsAPI';
 import APIError from '@/utils/APIError';
 import ERRCODE from '@/constants/errCode';
 
-// 한번에 몇개씩 호출할지 결정
-const NEWS_COUNT_NUM = 20;
-
-/**
- * (Nextjs Data Cache) API revalidate 지속시간: 10분
- */
+const GNEWS_COUNT_PER_PAGE = 10;
 const REVALIDATE_DURATION_SEC = 60 * 10;
 
 /**
- * Bing API 호출
+ * GNews API 호출
  * @param query: 검색어
- * @param pageNum: 불러올 페이지
- * @returns
+ * @param pageNum: 불러올 페이지 (1-indexed)
  */
-export const fetchBingNews = async (
+export const fetchGNews = async (
   query: TBingNewsFilterQueries['keyword'],
   pageNum: number,
 ) => {
   try {
-    const offset = NEWS_COUNT_NUM * pageNum;
-    const url = `news/search?mkt=en-us&q=${query}&count=${NEWS_COUNT_NUM}&offset=${offset}`;
-    const apiRes = await BingAPI.get<TBingNewsAPIRes>(url, {
+    const res = await GNewsAPI.get<TGNewsAPIRes>('search', {
+      params: { q: query, max: GNEWS_COUNT_PER_PAGE, page: pageNum },
       adapter: 'fetch',
       fetchOptions: {
-        // 캐시 옵션 추가
         next: {
-          tags: [query, NEWS_COUNT_NUM, offset],
+          tags: [query, GNEWS_COUNT_PER_PAGE, pageNum],
           revalidate: REVALIDATE_DURATION_SEC,
         },
       },
     });
-    return apiRes.data;
+    return res.data;
   } catch (e) {
     throw new APIError(ERRCODE.NEWS_FETCH_FAILED);
   }
