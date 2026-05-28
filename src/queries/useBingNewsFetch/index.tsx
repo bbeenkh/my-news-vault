@@ -139,18 +139,6 @@ export function updateNewsSearchQuery(
   );
 }
 
-export const prefetchBingNewsQuery = async (queries: TBingNewsFilterQueries) => {
-  await queryClient.prefetchInfiniteQuery({
-    ...queryOptionsFactory.news.bing.list({
-      ...defaultNewsFilterQueries,
-      ...queries,
-    }),
-    getNextPageParam: (lastPage, pages) => {
-      return pages.length === BING_NEWS_MAX_PAGE ? undefined : pages.length + 1;
-    },
-    initialPageParam: 1,
-  });
-};
 
 const useBingNewsFetch = {
   query: useBingNewsFetchQuery,

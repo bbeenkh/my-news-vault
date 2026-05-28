@@ -7,7 +7,7 @@ import { dehydrate, HydrationBoundary, usePrefetchQuery } from '@tanstack/react-
 import { queryClient } from '@/queries/queryClient';
 import { queryOptionsFactory } from '@/utils/queryOptionsFactory';
 import { TBingNewsFilterQueries } from '@/types';
-import { prefetchBingNewsQuery } from '@/queries/useBingNewsFetch';
+import { prefetchBingNewsQuery } from '@/queries/useBingNewsFetch/prefetch';
 
 /**
  * 검색 메인페이지
